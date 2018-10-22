@@ -32,7 +32,7 @@ class NdOnlineSpider(scrapy.Spider):
         for title in response.css('.side-noticias li'):
             next_link = self.url_base + title.xpath('a/@href').extract_first()
 
-            for page in range(2, 3):
+            for page in range(2, 50):
                 yield Request(next_link + "?p=" + str(page), callback=self.parse_topics)
 
     def parse_topics(self, response):

@@ -13,8 +13,8 @@ cur.execute("""
 
 CREATE TABLE news(
     id SERIAL PRIMARY KEY,
-    title VARCHAR(200),
-    subtitle VARCHAR(300),
+    title VARCHAR(500),
+    subtitle VARCHAR(500),
     date_time TIMESTAMP WITHOUT TIME ZONE,
     text TEXT,
     authors VARCHAR(200),
