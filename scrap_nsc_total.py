@@ -1,7 +1,7 @@
 '''
 Created on Oct 17, 2018
 
-@authors: Camila Leite, Vinicius Freitas
+@authors: Camila Leite, Vinicius Freitas, Lucas May
 '''
 import scrapy
 import psycopg2
