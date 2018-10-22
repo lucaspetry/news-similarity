@@ -15,13 +15,12 @@ class GloboSpider(scrapy.Spider):
     dbhost = "localhost"
     dbuser = "postgres"
     dbpass = "postgres"
-    debug = True
+    debug = False
 
     name = 'globo'
 
     start_urls = ['https://g1.globo.com/sc/santa-catarina']
-
-    url_base = "https://g1.globo.com/sc/santa-catarina"
+    stop = False
 
     def __init__(self):
         self.conn = psycopg2.connect("dbname='" + self.dbname +
@@ -30,13 +29,28 @@ class GloboSpider(scrapy.Spider):
                         "' password='" + self.dbpass + "'")
 
     def parse(self, response):
+        if self.stop:
+            return
+        
+        url_base = "https://g1.globo.com/sc/santa-catarina"
+        pg = response.meta['page'] if 'page' in response.meta else 1
+        if pg > 50:
+            return
         for title in response.css('.feed-post-body a'):
             next_link = title.xpath('@href').extract_first()
+            if not next_link:
+                continue
             yield Request(next_link, callback=self.parse_news)
+        next_link = url_base+"/index/feed/pagina-" + str(pg) + ".ghtml"
+        req = Request(next_link, callback=self.parse)
+        req.meta['page'] = pg+1
+        yield req
 
     def parse_news(self, response):
+        if self.stop:
+            return
 
-        debug = True
+        debug = False
         text_re = re.compile(r"<[^>]+>") # Regex to eliminate HTML tags
         if debug:
             print("----- ENTERING NEWS PAGE -----")
@@ -59,36 +73,59 @@ class GloboSpider(scrapy.Spider):
             return {title, subtitle}
 
         def extract_text():
-            if debug:
-                get_full_text = response.xpath("//*[contains(@class, 'StyledParagraph')]").extract() # Takes the HTML of the <p> element of class StyledParagraph. This is the class of all paragraphs in news article inside the HTML page.
-            if debug:
-                print(get_full_text)
+            get_full_text = response.xpath("//*[contains(@class, 'content-text__container')]").extract() # Takes the HTML of the <p> element of class StyledParagraph. This is the class of all paragraphs in news article inside the HTML page.
             text = "" # Create the base appendable text
             for p in get_full_text:
-                text_part = text_re.sub(p, "") # Eliminate all HTML tags from text
-                if debug:
-                    print(text_part)
-                text += text_part
-                text += " "
+                text_part = text_re.sub("", p) # Eliminate all HTML tags from text
+                text += text_part + " "
             if debug:
                 print("--- FINAL NEWS TEXT EXTRACTED ---")
                 print(text) # Show final text
             return text
 
-        def extract_subject():
-            return "Assunto"
-
-        def extract_author():
-            author_re = re.compile("Por") # Test if it eliminates names like 'Portugal' please
-            author_full = response.xpath("//div[contains(@class, 'Author')]")
+        def extract_tags():
+            get_full_tags = response.xpath("//*[@class='entities__list']")
+            get_full_tags = get_full_tags.css('a ::text').extract()
+            tags = str(get_full_tags).replace("'", "")
             if debug:
-                print("Full author text: " + author_full)
-            author = author_re.sub(author_full, "") # Eliminate 'Por' authorship declaration
-            return author
+                print(tags)
+            return tags
 
-        def commit_to_db():
+        def extract_subject():
+            return "Santa Catarina"
+
+        #G1 HAS NO AUTHORSHIP
+        def extract_author():
+            return ""
+
+        def commit_to_db(date, title, subtitle, text, tag, subject, author, link, portal):
+            cur = self.conn.cursor()
+            print("select count(*) from news where title = $title$" + title + "$title$ AND subtitle = $subtitle$" + subtitle + "$subtitle$ AND portal = $portal$" + portal + "$portal$")
+            cur.execute("select count(*) from news where title = $title$" + title + "$title$ AND subtitle = $subtitle$" + subtitle + "$subtitle$ AND portal = $portal$" + portal + "$portal$")
+
+            if cur.fetchall()[0][0] > 0:
+                return
+
+            query = "insert into news (title, subtitle, date_time, text, authors, portal, tags, subject, link) " + \
+                "values ($title$" + title + "$title$, $subtitle$" + subtitle + "$subtitle$, $date$" + str(date) + "$date$, $text$" + text + "$text$, $author$" + author + "$author$, $portal$" + \
+                portal + "$portal$, $tag$" + tag + "$tag$, $subject$" + subject + "$subject$, $link$" + link + "$link$)" 
+
+            try:
+                cur.execute(query)
+                self.conn.commit()
+            except e:
+                print("\n\n\n\n\n\n\n\n\nQuery Error: " + str(e) + "\n\n\n\n\n\n\n\n\n\n")
+                self.conn.rollback()
+                self.stop = True
+            
             return "Nada"
 
         date = extract_date()
-        title, subtitle = extract_sub_and_title();
-        print("Fechou")
+        title, subtitle = extract_sub_and_title()
+        text = extract_text()
+        tag = extract_tags()
+        subject = extract_subject()
+        author = extract_author()
+        link = response.url
+        portal = "Globo G1"
+        commit_to_db(date, title, subtitle, text, tag, subject, author, link, portal)
