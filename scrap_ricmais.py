@@ -26,7 +26,7 @@ class DC(scrapy.Spider):
                                      "' host='" + self.dbhost +
                                      "' password='" + self.dbpass + "'")
 
-        for page in range(1, 10):
+        for page in range(1, 50):
             self.start_urls.append('https://ricmais.com.br/sc/noticias/pagina/' + str(page))
 
     def parse(self, response):
