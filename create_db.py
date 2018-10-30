@@ -17,11 +17,11 @@ CREATE TABLE news(
     subtitle VARCHAR(500),
     date_time TIMESTAMP WITHOUT TIME ZONE,
     text TEXT,
-    authors VARCHAR(200),
-    tags VARCHAR(300),
+    authors VARCHAR(300),
+    tags TEXT,
     subject VARCHAR(100),
     portal VARCHAR(100),
-    link VARCHAR(200)
+    link VARCHAR(400)
 )
 """)
 conn.commit()

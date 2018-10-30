@@ -29,7 +29,7 @@ class JORNAL_SC(scrapy.Spider):
 
     def parse(self, response):
         pg = response.meta['page'] if 'page' in response.meta else 1
-        if pg > 10:
+        if pg > 500:
             return
         news_list = response.xpath("//div[@class='conteudo-lista']")
         for news in news_list: # Iterate through each of the menus

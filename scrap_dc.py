@@ -30,7 +30,7 @@ class DC(scrapy.Spider):
         for title in response.css('.nav-item-noticias .subnav .subnav-left ul li'):
             next_link = title.xpath('a/@href').extract_first()
 
-            for page in range(1, 10):
+            for page in range(1, 100):
                 yield Request(next_link + "?pagina=" + str(page),
                               callback=self.parse_topics)
 

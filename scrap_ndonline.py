@@ -32,7 +32,7 @@ class NdOnlineSpider(scrapy.Spider):
         for title in response.css('.side-noticias li'):
             next_link = self.url_base + title.xpath('a/@href').extract_first()
 
-            for page in range(2, 50):
+            for page in range(2, 200):
                 yield Request(next_link + "?p=" + str(page), callback=self.parse_topics)
 
     def parse_topics(self, response):
@@ -85,7 +85,7 @@ class NdOnlineSpider(scrapy.Spider):
         try:
             cur.execute(query)
             self.conn.commit()
-        except e:
+        except Exception as e:
             print("\n\n\nQuery Error: " + str(e) + "\n\n\n\n")
             self.conn.rollback()
 
