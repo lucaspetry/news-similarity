@@ -20,24 +20,34 @@ class DC(scrapy.Spider):
     url_base = 'http://dc.clicrbs.com.br/sc/'
     debug = True
 
-    def __init__(self):
-        self.conn = psycopg2.connect("dbname='" + self.dbname +
-                                     "' user='" + self.dbuser +
-                                     "' host='" + self.dbhost +
-                                     "' password='" + self.dbpass + "'")
+    #def __init__(self):
+        # self.conn = psycopg2.connect("dbname='" + self.dbname +
+        #                              "' user='" + self.dbuser +
+        #                              "' host='" + self.dbhost +
+        #                              "' password='" + self.dbpass + "'")
 
     def parse(self, response):
+        skip = ['Eleições 2018', 'Últimas']
+
         for title in response.css('.nav-item-noticias .subnav .subnav-left ul li'):
             next_link = title.xpath('a/@href').extract_first()
+            subject = title.css("a::text").extract_first()
+
+            if subject in skip:
+                continue
 
             for page in range(1, 100):
-                yield Request(next_link + "?pagina=" + str(page),
+                req = Request(next_link + "?pagina=" + str(page),
                               callback=self.parse_topics)
+                req.meta['subject'] = subject
+                yield req
 
     def parse_topics(self, response):
         for news in response.css('.box-articles article h2'):
             news_link = news.xpath('a/@href').extract_first()
-            yield Request(news_link, callback=self.parse_news)
+            req = Request(news_link, callback=self.parse_news)
+            req.meta['subject'] = response.meta['subject']
+            yield req
 
     def parse_news(self, response):
         tag_re = re.compile(r"<[^>]+>")  # Regex to eliminate HTML tags
@@ -49,7 +59,7 @@ class DC(scrapy.Spider):
             date_time = datetime.strptime(date + ' ' + time, '%d/%m/%Y - %H:%M')
             return date_time
 
-        subject = response.css('.article-header .cartola::text').extract_first()
+        subject = response.meta['subject']
         title = response.css('.article-header .article-title::text').extract_first().replace("'", "")
         subtitle = ''
         date_time = extract_date()
