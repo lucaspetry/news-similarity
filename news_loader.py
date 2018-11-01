@@ -64,7 +64,7 @@ def add_score(ids, field, score):
         return insert
 
     def get_update():
-        update = "UPDATE similarity WHERE news_id1 = :id1, news_id2 = :id2 SET " + field + " = :score"
+        update = "UPDATE similarity SET " + field + " = :score WHERE news_id1 = :id1 AND news_id2 = :id2"
         update = update.replace(":id1", str(ids[0]))
         update = update.replace(":id2", str(ids[1]))
         update = update.replace(":score", str(score))
