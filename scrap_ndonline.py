@@ -32,7 +32,7 @@ class NdOnlineSpider(scrapy.Spider):
         for title in response.css('.side-noticias li'):
             next_link = self.url_base + title.xpath('a/@href').extract_first()
 
-            for page in range(2, 200):
+            for page in range(2, 50):
                 yield Request(next_link + "?p=" + str(page), callback=self.parse_topics)
 
     def parse_topics(self, response):
@@ -54,7 +54,12 @@ class NdOnlineSpider(scrapy.Spider):
 
         title = response.css('.materia-header h1::text').extract()[0].replace("'", "")
 
-        subtitle = response.css('.materia-header p::text').extract()[0].replace("'", "")
+        subtitle = response.css('.materia-header p::text').extract_first()
+
+        if subtitle is None:
+            subtitle = ''
+
+        subtitle = subtitle.replace("'", "")
 
         date_time = response.css('.materia-header .materia-autor time::text').extract()[0].replace("h", ':')
         date_time = datetime.strptime(date_time, '%d/%m/%Y %H:%M')

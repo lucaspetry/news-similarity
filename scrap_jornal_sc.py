@@ -29,7 +29,7 @@ class JORNAL_SC(scrapy.Spider):
 
     def parse(self, response):
         pg = response.meta['page'] if 'page' in response.meta else 1
-        if pg > 500:
+        if pg > 100:
             return
         news_list = response.xpath("//div[@class='conteudo-lista']")
         for news in news_list: # Iterate through each of the menus
@@ -57,7 +57,7 @@ class JORNAL_SC(scrapy.Spider):
             req.meta['date'] = date_time
             req.meta['tags'] = tags
             yield req
-            return
+
         next_page = self.url_base+"?pagina="+str(pg)
         print("Crawl to: "+next_page)
         req = Request(next_page, callback=self.parse)
@@ -66,6 +66,7 @@ class JORNAL_SC(scrapy.Spider):
 
     def parse_news(self, response):
         title = response.meta['title']
+        subtitle = ''
         subject = response.meta['subject']
         tags = response.meta['tags']
         date_time = response.meta['date']
@@ -84,10 +85,13 @@ class JORNAL_SC(scrapy.Spider):
         author = parse_author()
         text = parse_text()
         link = response.url
-        
+        portal = 'Jornal de SC'
+
         query = "insert into news (title, subtitle, date_time, text, authors, portal, tags, subject, link) " + \
-                "values ('" + title + "', '" + subtitle + "', '" + str(date_time) + "', '" + text + "', '" + author + "', '" + \
-                portal + "', '" + str(tags).replace("'", '') + "', '" + subject + "', '" + link + "')"
+                "values ($tag$" + title + "$tag$, $tag$" + subtitle + "$tag$, $tag$" + str(date_time) + \
+                "$tag$, $tag$" + text + "$tag$, $tag$" + author + "$tag$, $tag$" + \
+                portal + "$tag$, $tag$" + str(tags).replace("'", '') + "$tag$, $tag$" + subject + "$tag$, $tag$" + link + "$tag$)"
+        cur = self.conn.cursor()
 
         try:
             cur.execute(query)

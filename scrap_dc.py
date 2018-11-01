@@ -20,11 +20,11 @@ class DC(scrapy.Spider):
     url_base = 'http://dc.clicrbs.com.br/sc/'
     debug = True
 
-    #def __init__(self):
-        # self.conn = psycopg2.connect("dbname='" + self.dbname +
-        #                              "' user='" + self.dbuser +
-        #                              "' host='" + self.dbhost +
-        #                              "' password='" + self.dbpass + "'")
+    def __init__(self):
+        self.conn = psycopg2.connect("dbname='" + self.dbname +
+                                     "' user='" + self.dbuser +
+                                     "' host='" + self.dbhost +
+                                     "' password='" + self.dbpass + "'")
 
     def parse(self, response):
         skip = ['Eleições 2018', 'Últimas']

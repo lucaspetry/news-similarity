@@ -13,6 +13,7 @@ cur.execute("""
 
 CREATE TABLE news(
     id SERIAL PRIMARY KEY,
+    global_id INTEGER,
     title VARCHAR(500),
     subtitle VARCHAR(500),
     date_time TIMESTAMP WITHOUT TIME ZONE,
@@ -21,7 +22,7 @@ CREATE TABLE news(
     tags TEXT,
     subject VARCHAR(100),
     portal VARCHAR(100),
-    link VARCHAR(400)
+    link VARCHAR(500)
 )
 """)
 conn.commit()

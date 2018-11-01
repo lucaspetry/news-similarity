@@ -34,7 +34,7 @@ class GloboSpider(scrapy.Spider):
         
         url_base = "https://g1.globo.com/sc/santa-catarina"
         pg = response.meta['page'] if 'page' in response.meta else 1
-        if pg > 500:
+        if pg > 300:
             return
         for title in response.css('.feed-post-body a'):
             next_link = title.xpath('@href').extract_first()
@@ -108,7 +108,7 @@ class GloboSpider(scrapy.Spider):
             query = "insert into news (title, subtitle, date_time, text, authors, portal, tags, subject, link) " + \
                 "values ($title$" + title + "$title$, $subtitle$" + subtitle + "$subtitle$, $date$" + str(date) + "$date$, $text$" + text + "$text$, $author$" + author + "$author$, $portal$" + \
                 portal + "$portal$, $tag$" + tag + "$tag$, $subject$" + subject + "$subject$, $link$" + link + "$link$)" 
-            print(query)
+
             try:
                 cur.execute(query)
                 self.conn.commit()
