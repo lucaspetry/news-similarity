@@ -17,7 +17,7 @@ def load_news(fields=['id', 'title', 'text', 'portal']):
                              .replace("[", "") \
                              .replace("]", "")
 
-    query = "SELECT " + field_names + " FROM news"
+    query = "SELECT " + field_names + " FROM news WHERE date_time <= '22/10/2018' AND date_time >= '22/09/2018'"
     news = []
 
     cur.execute(query)

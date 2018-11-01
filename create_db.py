@@ -25,5 +25,18 @@ CREATE TABLE news(
     link VARCHAR(500)
 )
 """)
+cur.execute("""
+CREATE TABLE similarity(
+    news_id1 INTEGER REFERENCES news(id),
+    news_id2 INTEGER REFERENCES news(id),
+    score_bow DOUBLE PRECISION,
+    score_doc2vec DOUBLE PRECISION,
+    score_jaccard_ner DOUBLE PRECISION,
+    score_doc2vec_ner DOUBLE PRECISION
+)
+""")
+cur.execute("""
+ALTER TABLE ONLY similarity ADD CONSTRAINT "ID_PKEY" PRIMARY KEY (news_id1, news_id2)
+""")
 conn.commit()
 conn.close()

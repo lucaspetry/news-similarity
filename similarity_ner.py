@@ -1,5 +1,5 @@
 """
-Named Entity Recognition (NER)
+Named Entity Recognition (NERDoc2Vec) Similarity
 """
 import spacy
 
@@ -21,3 +21,7 @@ doc = nlp(text)
 # Find named entities, phrases and concepts
 for entity in doc.ents:
     print(entity.text, entity.label_)
+
+
+
+# JACCARD SIMILARITY
