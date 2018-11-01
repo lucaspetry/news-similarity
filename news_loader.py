@@ -51,8 +51,29 @@ def add_score(ids, field, score):
     conn = connect()
     cur = conn.cursor()
 
-    query = "INSERT INTO similarity (news_id1, news_id2, " + field + ") VALUES (:id1, :id2, :score)"
+    query = "SELECT COUNT(*) FROM similarity WHERE news_id1 = :id1 AND news_id2 = :id2"
     query = query.replace(":id1", str(ids[0]))
     query = query.replace(":id2", str(ids[1]))
-    query = query.replace(":score", str(score))
     cur.execute(query)
+
+    def get_insert():
+        insert = "INSERT INTO similarity (news_id1, news_id2, " + field + ") VALUES (:id1, :id2, :score)"
+        insert = insert.replace(":id1", str(ids[0]))
+        insert = insert.replace(":id2", str(ids[1]))
+        insert = insert.replace(":score", str(score))
+        return insert
+
+    def get_update():
+        update = "UPDATE similarity WHERE news_id1 = :id1, news_id2 = :id2 SET " + field + " = :score"
+        update = update.replace(":id1", str(ids[0]))
+        update = update.replace(":id2", str(ids[1]))
+        update = update.replace(":score", str(score))
+        return update
+
+    if cur.fetchall()[0][0] > 0:
+        surprise_query = get_update()
+    else:
+        surprise_query = get_insert()
+
+    cur.execute(surprise_query)
+    conn.commit()
