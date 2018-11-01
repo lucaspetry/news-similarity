@@ -53,6 +53,6 @@ def add_score(ids, field, score):
 
     query = "INSERT INTO similarity (news_id1, news_id2, " + field + ") VALUES (:id1, :id2, :score)"
     query = query.replace(":id1", str(ids[0]))
-    query = query.replace(":id1", str(ids[1]))
+    query = query.replace(":id2", str(ids[1]))
     query = query.replace(":score", str(score))
     cur.execute(query)
