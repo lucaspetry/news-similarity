@@ -30,6 +30,7 @@ def load_news(fields=['id', 'title', 'text', 'portal']):
 
     return news
 
+
 def load_distinct(field_name):
     
     conn = connect()
@@ -44,6 +45,7 @@ def load_distinct(field_name):
         fields.append(field[0])
 
     return fields
+
 
 def add_score(ids, field, score):
     conn = connect()
