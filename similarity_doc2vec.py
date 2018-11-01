@@ -1,3 +1,6 @@
+"""
+Paragraph Vector (Doc2Vec)
+"""
 from news_loader import load_news
 import os
 import string
