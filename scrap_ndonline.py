@@ -5,16 +5,17 @@ Created on Sep 26, 2018
 '''
 import scrapy
 import psycopg2
+import db_settings
 from scrapy.http import Request
 from datetime import datetime
 import re
 
-class NdOnlineSpider(scrapy.Spider):
 
-    dbname = "news_articles"
-    dbhost = "localhost"
-    dbuser = "postgres"
-    dbpass = "postgres"
+class NdOnlineSpider(scrapy.Spider):
+    dbname = db_settings.DBNAME
+    dbhost = db_settings.DBHOST
+    dbuser = db_settings.DBUSER
+    dbpass = db_settings.DBPASS
 
     name = 'ndonline'
 

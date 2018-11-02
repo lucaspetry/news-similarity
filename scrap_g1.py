@@ -5,16 +5,17 @@ Created on 22, Oct, 2018
 '''
 import scrapy
 import psycopg2
+import db_settings
 from scrapy.http import Request
 from datetime import datetime
 import re
 
-class GloboSpider(scrapy.Spider):
 
-    dbname = "news_articles"
-    dbhost = "150.162.58.58"
-    dbuser = "postgres"
-    dbpass = "Trajetorias123"
+class GloboSpider(scrapy.Spider):
+    dbname = db_settings.DBNAME
+    dbhost = db_settings.DBHOST
+    dbuser = db_settings.DBUSER
+    dbpass = db_settings.DBPASS
     debug = False
 
     name = 'globo'

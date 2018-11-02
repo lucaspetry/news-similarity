@@ -5,16 +5,18 @@ Created on Oct 22, 2018
 '''
 import scrapy
 import psycopg2
+import db_settings
 from scrapy.http import Request
 from datetime import datetime
 import re
 
 
 class DC(scrapy.Spider):
-    dbname = "news_articles"
-    dbhost = "150.162.58.58"
-    dbuser = "postgres"
-    dbpass = "Trajetorias123"
+    dbname = db_settings.DBNAME
+    dbhost = db_settings.DBHOST
+    dbuser = db_settings.DBUSER
+    dbpass = db_settings.DBPASS
+
     name = 'DIARIO CATARINENSE'
     start_urls = ['http://dc.clicrbs.com.br/sc/']
     url_base = 'http://dc.clicrbs.com.br/sc/'

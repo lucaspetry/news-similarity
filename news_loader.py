@@ -1,9 +1,10 @@
 import psycopg2
+import db_settings
 
-dbname = "news_articles"
-dbhost = "150.162.58.58"
-dbuser = "postgres"
-dbpass = "Trajetorias123"
+dbname = db_settings.DBNAME
+dbhost = db_settings.DBHOST
+dbuser = db_settings.DBUSER
+dbpass = db_settings.DBPASS
 
 
 def connect():
