@@ -12,9 +12,9 @@ import re
 class GloboSpider(scrapy.Spider):
 
     dbname = "news_articles"
-    dbhost = "localhost"
+    dbhost = "150.162.58.58"
     dbuser = "postgres"
-    dbpass = "postgres"
+    dbpass = "Trajetorias123"
     debug = False
 
     name = 'globo'
@@ -34,7 +34,7 @@ class GloboSpider(scrapy.Spider):
         
         url_base = "https://g1.globo.com/sc/santa-catarina"
         pg = response.meta['page'] if 'page' in response.meta else 1
-        if pg > 300:
+        if pg > 200:
             return
         for title in response.css('.feed-post-body a'):
             next_link = title.xpath('@href').extract_first()
@@ -50,24 +50,23 @@ class GloboSpider(scrapy.Spider):
         if self.stop:
             return
 
-        debug = False
         text_re = re.compile(r"<[^>]+>") # Regex to eliminate HTML tags
-        if debug:
+        if self.debug:
             print("----- ENTERING NEWS PAGE -----")
 
         def extract_date():
-            date_time = response.css('time::text').extract_first().replace("h", ':')
+            date_time = response.xpath('//time/text()').extract_first().replace("h", ':')
             date_time = date_time[1:-1]
-            if debug:
+            if self.debug:
                 print(date_time)
             date_time = datetime.strptime(date_time, '%d/%m/%Y %H:%M')
             return date_time
 
         def extract_sub_and_title():
-            title = response.xpath("//*[contains(@class, 'content-head__title')]").extract_first()
-            title = text_re.sub("", title)
-            subtitle = response.css('h2::text').extract_first() # This website contains no subtitles
-            if debug:
+            title = response.xpath("//*[contains(@class, 'content-head__title')]/text()").extract_first()
+            # title = text_re.sub("", title)
+            subtitle = response.xpath("//*[contains(@class, 'content-head__subtitle')]/text()").extract_first() # This website contains no subtitles
+            if self.debug:
                 print(title)
                 print(subtitle)
             return {title, subtitle}
@@ -78,7 +77,7 @@ class GloboSpider(scrapy.Spider):
             for p in get_full_text:
                 text_part = text_re.sub("", p) # Eliminate all HTML tags from text
                 text += text_part + " "
-            if debug:
+            if self.debug:
                 print("--- FINAL NEWS TEXT EXTRACTED ---")
                 print(text) # Show final text
             return text
@@ -87,7 +86,7 @@ class GloboSpider(scrapy.Spider):
             get_full_tags = response.xpath("//*[@class='entities__list']")
             get_full_tags = get_full_tags.css('a ::text').extract()
             tags = str(get_full_tags).replace("'", "")
-            if debug:
+            if self.debug:
                 print(tags)
             return tags
 

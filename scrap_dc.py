@@ -12,9 +12,9 @@ import re
 
 class DC(scrapy.Spider):
     dbname = "news_articles"
-    dbhost = "localhost"
+    dbhost = "150.162.58.58"
     dbuser = "postgres"
-    dbpass = "postgres"
+    dbpass = "Trajetorias123"
     name = 'DIARIO CATARINENSE'
     start_urls = ['http://dc.clicrbs.com.br/sc/']
     url_base = 'http://dc.clicrbs.com.br/sc/'
@@ -36,7 +36,7 @@ class DC(scrapy.Spider):
             if subject in skip:
                 continue
 
-            for page in range(1, 100):
+            for page in range(1, 150):
                 req = Request(next_link + "?pagina=" + str(page),
                               callback=self.parse_topics)
                 req.meta['subject'] = subject
@@ -65,7 +65,7 @@ class DC(scrapy.Spider):
         date_time = extract_date()
         author = response.css('.article-body .col-left .contributor a::text').extract_first()
         author = 'NULL' if not author else author
-        text = response.css('.article-body .col-right div').extract_first().replace("'", "")
+        text = response.css('.article-body .col-right .entry-content').extract_first().replace("'", "")
         text = tag_re.sub("", text)
         tags = str(response.css('.article-footer .list-tags li a::text').extract())
         link = response.url
