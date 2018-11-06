@@ -4,7 +4,21 @@ Paragraph Vector (Doc2Vec)
 import os
 from gensim.models import Doc2Vec
 from gensim.models.doc2vec import LabeledSentence
+from gensim.models.callbacks import CallbackAny2Vec
 from gensim import utils
+
+
+class EpochLogger(CallbackAny2Vec):
+
+    def __init__(self):
+        self.epoch = 0
+
+    def on_epoch_begin(self, model):
+        pass
+
+    def on_epoch_end(self, model):
+        self.epoch += 1
+        print("Doc2Vec :: Epoch #{} end.".format(self.epoch))
 
 
 def doc2vec_from_news(corpus, filename=None):
@@ -29,10 +43,12 @@ def doc2vec_from_news(corpus, filename=None):
                              window=5,  # The size of the context window
                              vector_size=embedding_size,
                              #sample=1e-4,
-                             #negative=0,
+                             #negative=20,
                              workers=4,
-                             epochs=100,
-                             seed=1)
+                             epochs=200,
+                             seed=1,
+                             compute_loss=True,
+                             callbacks=[EpochLogger()])
         text_model.build_vocab(sentences)
         text_model.train(sentences,
                          total_examples=text_model.corpus_count,

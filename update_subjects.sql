@@ -86,3 +86,14 @@ AND (tags LIKE '%olícia%');
 UPDATE news SET subject = 'Segurança'
 WHERE portal = 'DIARIO CATARINENSE' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018'
 AND subject = 'Polícia';
+
+
+-- Translate topics to English
+UPDATE news SET subject = 'Economy' WHERE subject = 'Economia' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018';
+UPDATE news SET subject = 'Health' WHERE subject = 'Saúde' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018';
+UPDATE news SET subject = 'Politics' WHERE subject = 'Política' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018';
+UPDATE news SET subject = 'Sports' WHERE subject = 'Esporte' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018';
+UPDATE news SET subject = 'Public Safety' WHERE subject = 'Segurança' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018';
+UPDATE news SET subject = 'World' WHERE subject = 'Mundo' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018';
+UPDATE news SET subject = 'Unclassified' WHERE subject = 'Sem Classificação' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018';
+UPDATE news SET subject = 'Weather' WHERE subject = 'Clima' AND date_time <= '22/10/2018' AND date_time >= '22/09/2018';
