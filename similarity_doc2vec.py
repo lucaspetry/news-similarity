@@ -43,52 +43,54 @@ def load_cleaned_news():
     return news
 
 
-##################################
-# Create sentences
-##################################
+def doc2vec_from_news(news, filename=None):
+    sentences = []
+
+    for article in news:
+        sentences.append(
+            LabeledSentence(utils.to_unicode(article['new_text']).split(),
+                            [article['id']]))
+
+    ##################################
+    # Learn or load doc embeddings
+    ##################################
+    embedding_size = 200
+    text_model = None
+
+    if filename and os.path.isfile(filename):
+        text_model = Doc2Vec.load(filename)
+    else:
+        print("Training Doc2Vec network...")
+        text_model = Doc2Vec(min_count=1,  # Ignores words with lower counts than this
+                             window=5,  # The size of the context window
+                             vector_size=embedding_size,
+                             #sample=1e-4,
+                             #negative=0,
+                             workers=4,
+                             epochs=100,
+                             seed=1)
+        text_model.build_vocab(sentences)
+        text_model.train(sentences,
+                         total_examples=text_model.corpus_count,
+                         epochs=text_model.iter)
+
+        if filename:
+            text_model.save(filename)
+            print("Model saved to file", filename)
+
+        print("Training Doc2Vec network... DONE!")
+    embeddings = []
+
+    for article in news:
+        embeddings.append(text_model[article['id']])
+
+    return embeddings
+
+
 print("Loading news.")
 news = load_cleaned_news()
-sentences = []
-
-for article in news:
-    sentences.append(
-        LabeledSentence(utils.to_unicode(article['new_text']).split(),
-                        [article['id']]))
-
-
-##################################
-# Learn or load doc embeddings
-##################################
-print("Training Doc2Vec network.")
-
-embedding_size = 200
-text_model = None
-filename = 'similarity_doc2vec_data.d2v'
-
-if os.path.isfile(filename):
-    text_model = Doc2Vec.load(filename)
-else:
-    text_model = Doc2Vec(min_count=1,  # Ignores words with lower counts than this
-                         window=5,  # The size of the context window
-                         vector_size=embedding_size,
-                         #sample=1e-4,
-                         #negative=0,
-                         workers=4,
-                         epochs=100,
-                         seed=1)
-    text_model.build_vocab(sentences)
-    text_model.train(sentences,
-                     total_examples=text_model.corpus_count,
-                     epochs=text_model.iter)
-    text_model.save(filename)
-
-embeddings = []
 doc2int = dict(zip([article['id'] for article in news], np.r_[0:len(news)]))
-
-for article in news:
-    embeddings.append(text_model[article['id']])
-
-print("Computing and storing similarity scores.")
+embeddings = doc2vec_from_news(news, filename='similarity_doc2vec_data.d2v')
 sim_mx = np.absolute(cosine_similarity(embeddings))
 
 # Gambi, just because
