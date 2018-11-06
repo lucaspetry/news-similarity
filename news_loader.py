@@ -13,15 +13,15 @@ def connect():
                             "' host='" + dbhost +
                             "' password='" + dbpass + "'")
 
-def load_news(fields=['id', 'title', 'text', 'portal']):
-    
+def load_news(fields=['id', 'title', 'text', 'portal'],
+              date_begin='22/09/2018', date_end='22/10/2018'):
     conn = connect()
     cur = conn.cursor()
     field_names = str(fields).replace("'", "") \
                              .replace("[", "") \
                              .replace("]", "")
 
-    query = "SELECT " + field_names + " FROM news WHERE date_time <= '22/10/2018' AND date_time >= '22/09/2018' ORDER BY id ASC"
+    query = "SELECT " + field_names + " FROM news WHERE date_time <= '" + date_end + "' AND date_time >= '" + date_begin + "' ORDER BY id ASC"
     news = []
 
     cur.execute(query)

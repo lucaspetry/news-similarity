@@ -34,9 +34,9 @@ class JORNAL_SC(scrapy.Spider):
         news_list = response.xpath("//div[@class='conteudo-lista']")
         for news in news_list: # Iterate through each of the menus
             def parse_tags_and_date():
-                sub_and_date_html = news.xpath("//p[@class='materia-cabecalho']")
-                subject = sub_and_date_html.xpath("//span[contains(@class, 'editoria')]//text()").extract_first()
-                date_txt = sub_and_date_html.xpath("//span[@class='data-publicacao']//text()").extract_first()
+                sub_and_date_html = news.xpath("p[@class='materia-cabecalho']")
+                subject = sub_and_date_html.xpath("span[contains(@class, 'editoria')]//text()").extract_first()
+                date_txt = sub_and_date_html.xpath("span[@class='data-publicacao']//text()").extract_first()
                 tags = news.css("div .lista-tags").css("li").xpath("a/@title").extract()
                 return (subject, date_txt, tags)
 
