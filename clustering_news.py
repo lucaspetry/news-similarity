@@ -121,10 +121,10 @@ pred_labels_bow = cluster.fit_predict(bow_dist)
 evaluate_clusters(labels, pred_labels_bow, technique='Bag of Words')
 plot_data(vectors=doc_bow_2d[idx_filter], labels=pred_labels_bow[idx_filter],
           title='TSNE of News Dataset (Agglomerative Clustering from Bag of Words)',
-          file='tsne_bow.pdf')
+          file='data/tsne_bow.pdf')
 
 doc_embeddings = doc2vec_from_news(corpus_no_stem,
-                                   filename='vectors_doc2vec.d2v')
+                                   filename='data/vectors_doc2vec.d2v')
 embeddings_dist = cosine_distances(doc_embeddings)
 
 cluster = AgglomerativeClustering(n_clusters=len(set(labels)),
@@ -135,10 +135,10 @@ pred_labels_doc2vec = cluster.fit_predict(embeddings_dist)
 evaluate_clusters(labels, pred_labels_doc2vec, technique='Doc2Vec')
 plot_data(vectors=doc_bow_2d[idx_filter], labels=pred_labels_doc2vec[idx_filter],
           title='TSNE of News Dataset (Agglomerative Clustering from Doc2Vec)',
-          file='tsne_doc2vec.pdf')
+          file='data/tsne_doc2vec.pdf')
 
 print("Computing NEL clustering...")
-doc_nel = nel_from_news(corpus_nel, filename='vectors_nel.bin')
+doc_nel = nel_from_news(corpus_nel, filename='data/vectors_nel.bin')
 nel_dist = jaccard_distances(doc_nel)
 
 cluster = AgglomerativeClustering(n_clusters=50,  # len(set(labels)),
@@ -149,5 +149,5 @@ pred_labels_nel = cluster.fit_predict(nel_dist)
 evaluate_clusters(labels, pred_labels_nel, technique='Named Entity Lists (NEL)')
 plot_data(vectors=doc_bow_2d[idx_filter], labels=pred_labels_nel[idx_filter],
           title='TSNE of News Dataset (Agglomerative Clustering from NEL)',
-          file='tsne_nel.pdf')
+          file='data/tsne_nel.pdf')
 print("Computing NEL clustering... DONE!")
