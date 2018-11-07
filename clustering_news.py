@@ -5,6 +5,7 @@ from plot_news import plot_data
 from clustering import clustering_bow
 from clustering import clustering_doc2vec
 from clustering import clustering_nel
+from clustering import clustering_nel_cosine
 from joblib import Parallel, delayed
 import multiprocessing
 import numpy as np
@@ -46,11 +47,11 @@ baseline_2d = baseline(corpus=corpus,
                        normalize_words=False)
 print("Computing baseline (Bag of Words)... DONE!")
 
-print("Computing clustering Bag of Words...")
-clus_bow = clustering_bow(corpus=corpus,
-                          labels=labels,
-                          filename='data/vectors_bow.bin')
-print("Computing clustering Bag of Words... DONE!")
+# print("Computing clustering Bag of Words...")
+# clus_bow = clustering_bow(corpus=corpus,
+#                           labels=labels,
+#                           filename='data/vectors_bow.bin')
+# print("Computing clustering Bag of Words... DONE!")
 
 print("Computing clustering Doc2Vec...")
 clus_doc2vec = clustering_doc2vec(corpus=corpus_no_stem,
@@ -64,11 +65,21 @@ clus_nel = clustering_nel(corpus=corpus_nel,
                           filename='data/vectors_nel.bin')
 print("Computing clustering Named Entity List... DONE!")
 
+print("Computing clustering Bag of Named Entities...")
+clus_nel_cosine = clustering_nel_cosine(corpus=corpus_nel,
+                                        labels=labels,
+                                        filename='data/vectors_nel.bin')
+print("Computing clustering Bag of Named Entities... DONE!")
+
 idx_filter = np.where(labels != 'Unclassified')
 
 plot_data(vectors=baseline_2d[idx_filter], labels=labels[idx_filter],
           title='TSNE of News Dataset (Baseline Bag of Words)',
           file='data/tsne_baseline.pdf')
+
+# plot_data(vectors=baseline_2d[idx_filter], labels=clus_bow[idx_filter],
+#           title='TSNE of News Dataset (Agglomerative Clustering from Bag of Words)',
+#           file='data/tsne_bow.pdf')
 
 plot_data(vectors=baseline_2d[idx_filter], labels=clus_doc2vec[idx_filter],
           title='TSNE of News Dataset (Agglomerative Clustering from Doc2Vec)',
@@ -82,3 +93,6 @@ plot_data(vectors=baseline_2d[idx_filter], labels=clus_bow[idx_filter],
           title='TSNE of News Dataset (Agglomerative Clustering from BOW)',
           file='data/tsne_bow.pdf')
 
+plot_data(vectors=baseline_2d[idx_filter], labels=clus_nel_cosine[idx_filter],
+          title='TSNE of News Dataset (Agglomerative Clustering from Bag of Named Entities)',
+          file='data/tsne_nel_cosine.pdf')
