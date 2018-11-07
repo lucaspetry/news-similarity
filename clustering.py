@@ -1,5 +1,6 @@
 from text.doc2vec import doc2vec_from_news
 from text.bag_of_words import bow_from_news
+from text.bag_of_ne import bon_from_news
 from text.nel import nel_from_news
 from sklearn.metrics.pairwise import cosine_distances
 from sklearn.cluster import AgglomerativeClustering
@@ -92,4 +93,15 @@ def clustering_nel(corpus, labels, filename=None):
     cluster = get_clustering_algorithm(k=len(set(labels)))
     pred_labels = cluster.fit_predict(vectors_dist)
     evaluate_clusters(labels, pred_labels, technique='Named Entity List')
+    return pred_labels
+
+
+def clustering_nel_cosine(corpus, labels, filename=None):
+    doc_vectors = bon_from_news(corpus,
+                                filename=filename)
+
+    vectors_dist = cosine_distances(doc_vectors)
+    cluster = get_clustering_algorithm(k=len(set(labels)))
+    pred_labels = cluster.fit_predict(vectors_dist)
+    evaluate_clusters(labels, pred_labels, technique='Bag of Words')
     return pred_labels
