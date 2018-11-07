@@ -6,6 +6,8 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import homogeneity_completeness_v_measure
 from sklearn.decomposition import PCA
 import numpy as np
+import os
+import pickle
 
 
 def get_clustering_algorithm(k):
@@ -39,15 +41,33 @@ def jaccard_distances(nel_list):
     return dist_mx
 
 
-def clustering_bow(corpus, labels, filename=None):
-    doc_vectors = bow_from_news(corpus,
-                                filename=filename)
+def load(filename):
+    with open(filename, "rb") as fp:
+        return pickle.load(fp)
 
-    pca = PCA(n_components=5000, copy=False)
-    doc_vectors = pca.fit_transform(doc_vectors)
+
+def save(obj, filename):
+    with open(filename, "wb") as fp:
+        pickle.dump(obj, fp)
+
+
+def clustering_bow(corpus, labels, filename=None):
+    doc_vectors = None
+
+    if filename and os.path.isfile(filename):
+        doc_vectors = load(filename)
+    else:
+        doc_vectors = bow_from_news(corpus,
+                                    filename=None)
+
+        pca = PCA(n_components=5000, copy=False)
+        doc_vectors = pca.fit_transform(doc_vectors)
+
+        if filename:
+            save(doc_vectors, filename)
 
     vectors_dist = cosine_distances(doc_vectors)
-    cluster = get_clustering_algorithm(k=len(labels))
+    cluster = get_clustering_algorithm(k=len(set(labels)))
     pred_labels = cluster.fit_predict(vectors_dist)
     evaluate_clusters(labels, pred_labels, technique='Bag of Words')
     return pred_labels
@@ -58,7 +78,7 @@ def clustering_doc2vec(corpus, labels, filename=None):
                                     filename=filename)
     vectors_dist = cosine_distances(doc_vectors)
 
-    cluster = get_clustering_algorithm(k=len(labels))
+    cluster = get_clustering_algorithm(k=len(set(labels)))
     pred_labels = cluster.fit_predict(vectors_dist)
     evaluate_clusters(labels, pred_labels, technique='Doc2Vec')
     return pred_labels
@@ -69,7 +89,7 @@ def clustering_nel(corpus, labels, filename=None):
                                 filename=filename)
     vectors_dist = jaccard_distances(doc_vectors)
 
-    cluster = get_clustering_algorithm(k=len(labels))
+    cluster = get_clustering_algorithm(k=len(set(labels)))
     pred_labels = cluster.fit_predict(vectors_dist)
     evaluate_clusters(labels, pred_labels, technique='Named Entity List')
     return pred_labels
