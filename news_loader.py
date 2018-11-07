@@ -13,6 +13,7 @@ def connect():
                             "' host='" + dbhost +
                             "' password='" + dbpass + "'")
 
+
 def load_news(fields=['id', 'title', 'text', 'portal'],
               date_begin='22/09/2018', date_end='22/10/2018'):
     conn = connect()

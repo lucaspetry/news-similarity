@@ -2,6 +2,9 @@
 Bag of Words (BoW)
 """
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+from MulticoreTSNE import MulticoreTSNE as TSNE
 import numpy as np
 import pickle
 import os
@@ -35,3 +38,23 @@ def bow_from_news(corpus, filename=None, normalize_words=True):
         if filename:
             save(grid_word_count, filename)
         return grid_word_count
+
+
+def baseline(corpus, labels, filename=None, k_best=5000,
+             normalize_words=False):
+    if filename and os.path.isfile(filename):
+        return load(filename)
+    else:
+        doc_bow = bow_from_news(corpus,
+                                filename=None,
+                                normalize_words=normalize_words)
+        sel_doc_bow = SelectKBest(chi2, k=k_best).fit_transform(doc_bow,
+                                                                labels)
+
+        tsne = TSNE(n_components=2, n_jobs=4, random_state=1)
+        doc_bow_2d = tsne.fit_transform(sel_doc_bow)
+
+        if filename:
+            save(doc_bow_2d, filename)
+
+        return doc_bow_2d
