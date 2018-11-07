@@ -77,3 +77,8 @@ plot_data(vectors=baseline_2d[idx_filter], labels=clus_doc2vec[idx_filter],
 plot_data(vectors=baseline_2d[idx_filter], labels=clus_nel[idx_filter],
           title='TSNE of News Dataset (Agglomerative Clustering from Named Entity List)',
           file='data/tsne_nel.pdf')
+
+plot_data(vectors=baseline_2d[idx_filter], labels=clus_bow[idx_filter],
+          title='TSNE of News Dataset (Agglomerative Clustering from BOW)',
+          file='data/tsne_bow.pdf')
+

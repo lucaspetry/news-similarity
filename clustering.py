@@ -7,6 +7,7 @@ from sklearn.metrics import homogeneity_completeness_v_measure
 from sklearn.decomposition import PCA
 import numpy as np
 import os
+import random
 import pickle
 
 
@@ -60,14 +61,8 @@ def clustering_bow(corpus, labels, filename=None):
         doc_vectors = bow_from_news(corpus,
                                     filename=None)
 
-        pca = PCA(n_components=5000, copy=False)
-        doc_vectors = pca.fit_transform(doc_vectors)
-
-        if filename:
-            save(doc_vectors, filename)
-
     vectors_dist = cosine_distances(doc_vectors)
-    cluster = get_clustering_algorithm(k=len(set(labels)))
+    cluster = get_clustering_algorithm(20)
     pred_labels = cluster.fit_predict(vectors_dist)
     evaluate_clusters(labels, pred_labels, technique='Bag of Words')
     return pred_labels
