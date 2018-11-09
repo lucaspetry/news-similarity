@@ -120,7 +120,7 @@ news_spread = get_spreading(news_nel, vectors_sim, threshold=0.5)
 x = [1, 2, 3, 4, 5]
 y = np.zeros(5)
 
-for idx,count in enumerate(news_spread):
+for idx, count in enumerate(news_spread):
     if count >= 3:
         breaking_news08.append(news_nel[idx]['id'])
     y[count - 1] += 1
@@ -128,12 +128,3 @@ for idx,count in enumerate(news_spread):
 print(x)
 print(y)
 print(breaking_news08)
-
-#Result doc2vec
-#[1, 2, 3, 4, 5]
-#[6711. 1946.  131.   25.    0.]
-#[12548, 15545, 21388, 22721, 24657, 24736, 24789, 24906, 25013, 25181, 25279, 25349, 25411, 25491, 25663, 25755, 25811, 25912, 26003, 26066, 26190, 26259, 26378, 26552, 27099]
-#Counting Breaking News with .8 threshold
-#[1, 2, 3, 4, 5]
-#[6940. 1855.   18.    0.    0.]
-#[8586, 8779, 12051, 12688, 12958, 15938, 24693, 24704, 25075, 25396, 25538, 26259, 27118, 27188, 27330, 27518, 27519, 27683]
