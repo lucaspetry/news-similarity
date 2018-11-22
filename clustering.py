@@ -1,5 +1,6 @@
 from text.doc2vec import doc2vec_from_news
 from text.bag_of_words import bow_from_news
+from text.tfidf import tfidf_from_news
 from text.bag_of_ne import bon_from_news
 from text.nel import nel_from_news
 from sklearn.metrics.pairwise import cosine_distances
@@ -53,7 +54,7 @@ def save(obj, filename):
         pickle.dump(obj, fp)
 
 
-def clustering_bow(corpus, labels, filename=None):
+def clustering_bow(corpus, labels, algorithm, filename=None):
     doc_vectors = None
 
     if filename and os.path.isfile(filename):
@@ -61,6 +62,22 @@ def clustering_bow(corpus, labels, filename=None):
     else:
         doc_vectors = bow_from_news(corpus,
                                     filename=None)
+
+    vectors_dist = cosine_distances(doc_vectors)
+    cluster = get_clustering_algorithm(20)
+    pred_labels = cluster.fit_predict(vectors_dist)
+    evaluate_clusters(labels, pred_labels, technique='Bag of Words')
+    return pred_labels
+
+
+def clustering_tfidf(corpus, labels, filename=None):
+    doc_vectors = None
+
+    if filename and os.path.isfile(filename):
+        doc_vectors = load(filename)
+    else:
+        doc_vectors = tfidf_from_news(corpus,
+                                      filename=None)
 
     vectors_dist = cosine_distances(doc_vectors)
     cluster = get_clustering_algorithm(20)

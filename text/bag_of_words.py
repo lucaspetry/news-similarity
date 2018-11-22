@@ -17,10 +17,10 @@ def load(filename):
 
 def save(obj, filename):
     with open(filename, "wb") as fp:
-        pickle.dump(obj, fp)
+        pickle.dump(obj, fp, protocol=4)
 
 
-def bow_from_news(corpus, filename=None, normalize_words=True):
+def bow_from_news(corpus, filename=None, normalize_words=False):
     if filename and os.path.isfile(filename):
         return load(filename)
     else:
