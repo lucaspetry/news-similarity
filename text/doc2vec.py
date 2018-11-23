@@ -40,7 +40,7 @@ def doc2vec_from_news(corpus, filename=None):
     else:
         print("Training Doc2Vec network...")
         text_model = Doc2Vec(min_count=1,  # Ignores words with lower counts than this
-                             window=5,  # The size of the context window
+                             window=3,  # The size of the context window
                              vector_size=embedding_size,
                              #sample=1e-4,
                              #negative=20,

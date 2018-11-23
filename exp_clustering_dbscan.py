@@ -21,7 +21,7 @@ from text.nel import nel_from_news
 
 
 n_jobs = multiprocessing.cpu_count()
-results_file = 'exp_clustering_results.csv'
+results_file = 'exp_clustering_dbscan_results.csv'
 
 
 def jaccard_distances(nel_list):
@@ -86,10 +86,16 @@ def save(obj, filename):
         pickle.dump(obj, fp, protocol=4)
 
 
-test_eps = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+test_eps = np.arange(0.05, 0.91, 0.05)
 test_min_samples = [5, 10, 15, 20, 25]
 
-techniques = [{'name': 'NEL',
+techniques = [{'name': 'Doc2Vec',
+               'vectors': doc2vec_from_news,
+               'corpus': get_corpus_doc2vec,
+               'dist': cosine_distances,
+               'filename': 'data/vectors_doc2vec.bin',
+               'dist_file': 'data/dist_doc2vec.bin'},
+              {'name': 'NEL',
                'vectors': nel_from_news,
                'corpus': get_corpus_nel,
                'dist': jaccard_distances,
@@ -106,13 +112,7 @@ techniques = [{'name': 'NEL',
                'corpus': get_corpus_bow,
                'dist': chunk_cosine_distances,
                'filename': None,
-               'dist_file': 'data/dist_bow.bin'},
-              {'name': 'Doc2Vec',
-               'vectors': doc2vec_from_news,
-               'corpus': get_corpus_doc2vec,
-               'dist': cosine_distances,
-               'filename': 'data/vectors_doc2vec.bin',
-               'dist_file': 'data/dist_doc2vec.bin'}]
+               'dist_file': 'data/dist_bow.bin'}]
 
 results = pd.DataFrame(data={'technique': [],
                              'clus': [],
@@ -168,7 +168,7 @@ for technique in techniques:
                                           'completeness': compl,
                                           'v_measure': v_measure},
                                          ignore_index=True)
-                print("Done:", technique['name'], 'DBSCAN', 'eps=' + str(eps) + ';min_samples=' + str(min_samples), num_clusters, homog, compl, v_measure)
+                print(technique['name'], 'DBSCAN', 'eps=' + str(eps) + ';min_samples=' + str(min_samples), num_clusters, homog, compl, v_measure)
                 results.to_csv(results_file, index=False)
 
     vectors_dist = None

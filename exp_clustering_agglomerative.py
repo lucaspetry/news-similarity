@@ -166,7 +166,7 @@ for technique in techniques:
                                           'completeness': compl,
                                           'v_measure': v_measure},
                                          ignore_index=True)
-                print("Done:", technique['name'], 'Agglomerative', 'link=' + link, k, homog, compl, v_measure)
+                print(technique['name'], 'Agglomerative', 'link=' + link, k, homog, compl, v_measure)
                 results.to_csv(results_file, index=False)
 
     vectors_dist = None
