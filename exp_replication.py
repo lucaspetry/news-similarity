@@ -20,19 +20,25 @@ from text.nel import nel_from_news
 
 
 n_jobs = multiprocessing.cpu_count()
-results_file = 'exp_spreading_results.csv'
+results_file = 'exp_replication_results.csv'
 
 
-def get_spreading(news_portals, sim_matrix, threshold):
-    spread_count = []
+def get_replication(news, sim_matrix, threshold):
+    portals = set([article['portal'] for article in news])
+    replication = dict(zip(portals, np.zeros(len(portals))))
+    obs = dict(zip(portals, [[] for _ in range(0, len(portals))]))
 
-    for idx, portal in enumerate(news_portals):
-        cond = np.where(sim_matrix[idx] >= threshold)
-        portals, count = np.unique(news_portals[cond],
-                                   return_counts=True)
-        spread_count.append(len(portals))
+    for idx, article in enumerate(news):
+        portal = article['portal']
+        for idx2, article2 in enumerate(news):
+            if idx >= idx2 or portal != article2['portal']:
+                continue
 
-    return spread_count
+            if sim_matrix[idx][idx2] >= threshold:
+                replication[portal] += 1
+                obs[portal].append((news[idx]['id'], news[idx2]['id']))
+
+    return replication, obs
 
 
 def jaccard_distances(nel_list):
@@ -143,7 +149,7 @@ for technique in techniques:
     dist_file = technique['dist_file']
     vector_fun = technique['vectors']
 
-    print("Computing spreading for technique", technique['name'], '...')
+    print("Computing replication for technique", technique['name'], '...')
 
     if file and os.path.isfile(file):
         doc_vectors = load(file)
@@ -163,16 +169,14 @@ for technique in techniques:
     sim_matrix = 1 - vectors_dist
 
     for threshold in test_threshold:
-        spreading = get_spreading(portals, sim_matrix, threshold)
-        count = np.bincount(spreading)
-        results = results.append({'technique': technique['name'],
-                                  'threshold': threshold,
-                                  '1': count[1],
-                                  '2': count[2] if len(count) > 2 else 0,
-                                  '3': count[3] if len(count) > 3 else 0,
-                                  '4': count[4] if len(count) > 4 else 0,
-                                  '5': count[5] if len(count) > 5 else 0},
-                                 ignore_index=True)
+        replication, _ = get_replication(news, sim_matrix, threshold)
+        data = {'technique': technique['name'],
+                'threshold': threshold}
+
+        for portal, count in replication.items():
+            data[portal] = count
+
+        results = results.append(data, ignore_index=True)
         results.to_csv(results_file, index=False)
         print(technique['name'], 'threshold=' + str(threshold))
 
