@@ -9,7 +9,8 @@ n_jobs = multiprocessing.cpu_count()
 
 
 def load_cleaned_news(remove_stopwords=True, stem=False):
-    news = load_news(fields=['id', 'title', 'subtitle', 'subject', 'text'])
+    news = load_news(fields=['id', 'title', 'subtitle', 'subject', 'portal',
+                             'text'])
 
     results = Parallel(n_jobs=n_jobs)(
         delayed(cleanup_text)(article['text'],
