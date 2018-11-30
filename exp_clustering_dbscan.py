@@ -120,7 +120,8 @@ results = pd.DataFrame(data={'technique': [],
                              'num_clusters': [],
                              'homogeneity': [],
                              'completeness': [],
-                             'v_measure': []})
+                             'v_measure': [],
+                             'outliers': []})
 
 for technique in techniques:
     gc.collect()
@@ -148,6 +149,24 @@ for technique in techniques:
 
     print("Computing/loading distances for technique", technique['name'], '... DONE!')
 
+    articles_filter = np.where(labels != "Unclassified")
+    keep_idxs = np.r_[0:len(labels)][articles_filter]
+    # new_vectors = []
+
+    # for idx, vec in enumerate(doc_vectors):
+    #     if idx in keep_idxs:
+    #         new_vectors.append(vec)
+
+    # doc_vectors = new_vectors
+    new_dist = []
+
+    for idx, row in enumerate(vectors_dist):
+        if idx in keep_idxs:
+            new_dist.append(row[articles_filter])
+
+    vectors_dist = np.array(new_dist)
+    labels = labels[articles_filter]
+
     for eps in test_eps:
         for min_samples in test_min_samples:
                 dbscan = DBSCAN(eps=eps,
@@ -155,6 +174,7 @@ for technique in techniques:
                                 metric='precomputed',
                                 n_jobs=2)
                 pred_labels = dbscan.fit_predict(vectors_dist)
+                outliers = np.count_nonzero(np.where(pred_labels == -1))
                 num_clusters = len(set(pred_labels))
                 (homog,
                  compl,
@@ -166,9 +186,10 @@ for technique in techniques:
                                           'num_clusters': num_clusters,
                                           'homogeneity': homog,
                                           'completeness': compl,
-                                          'v_measure': v_measure},
+                                          'v_measure': v_measure,
+                                          'outliers': outliers},
                                          ignore_index=True)
-                print(technique['name'], 'DBSCAN', 'eps=' + str(eps) + ';min_samples=' + str(min_samples), num_clusters, homog, compl, v_measure)
+                print(technique['name'], 'DBSCAN', 'eps=' + str(eps) + ';min_samples=' + str(min_samples), num_clusters, homog, compl, v_measure, 'outliers=', outliers)
                 results.to_csv(results_file, index=False)
 
     vectors_dist = None

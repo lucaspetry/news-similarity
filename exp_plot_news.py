@@ -8,9 +8,14 @@ def plot_data(vectors, labels, title, file):
     plt.rcParams.update({'font.size': 28})
     fig = plt.figure(figsize=(35, 25))
     ax = fig.add_subplot(1, 1, 1)
-    colors = ['red', 'hotpink', 'steelblue', 'orange',
-              'darkviolet', 'sienna', 'limegreen', 'darkblue',
-              'darkgreen', 'grey', 'gold', 'darkred', 'dodgerblue']
+    colors = ['royalblue', 'hotpink', 'steelblue', 'orange',
+              'darkviolet', 'sienna', 'darkblue', 'limegreen',
+              'darkgreen', 'grey', 'red', 'darkred', 'dodgerblue',
+              'lightblue', 'gold', 'purple', 'plum', 'lightyellow',
+              'olive', 'peru', 'black', 'lightcoral', 'aquamarine',
+              'lime', 'slategray', 'darkorange', 'darkkhaki', 'm',
+              'slateblue', 'darkslateblue', 'darkslategrey', 'cornsilk',
+              'tan', 'palegreen', 'deepskyblue', 'lightskyblue']
     handles = []
 
     for idx, label in enumerate(sorted_labels):

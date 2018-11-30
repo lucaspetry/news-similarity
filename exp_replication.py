@@ -169,12 +169,20 @@ for technique in techniques:
     sim_matrix = 1 - vectors_dist
 
     for threshold in test_threshold:
-        replication, _ = get_replication(news, sim_matrix, threshold)
+        replication, obs = get_replication(news, sim_matrix, threshold)
+
         data = {'technique': technique['name'],
                 'threshold': threshold}
 
         for portal, count in replication.items():
+            articles = set()
+
+            for o in obs[portal]:
+                articles.add(o[0])
+                articles.add(o[1])
+
             data[portal] = count
+            data[portal + "_articles"] = len(articles)
 
         results = results.append(data, ignore_index=True)
         results.to_csv(results_file, index=False)

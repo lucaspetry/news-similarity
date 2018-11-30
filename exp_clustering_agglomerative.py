@@ -148,6 +148,24 @@ for technique in techniques:
 
     print("Computing/loading distances for technique", technique['name'], '... DONE!')
 
+    articles_filter = np.where(labels != "Unclassified")
+    keep_idxs = np.r_[0:len(labels)][articles_filter]
+    # new_vectors = []
+
+    # for idx, vec in enumerate(doc_vectors):
+    #     if idx in keep_idxs:
+    #         new_vectors.append(vec)
+
+    # doc_vectors = new_vectors
+    new_dist = []
+
+    for idx, row in enumerate(vectors_dist):
+        if idx in keep_idxs:
+            new_dist.append(row[articles_filter])
+
+    vectors_dist = np.array(new_dist)
+    labels = labels[articles_filter]
+
     for link in test_link:
         for k in test_k:
                 agglomerative = AgglomerativeClustering(n_clusters=k,
