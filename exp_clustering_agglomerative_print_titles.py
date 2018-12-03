@@ -1,13 +1,10 @@
 from text.bag_of_words import bow_from_news
 from exp_corpus_loader import load_cleaned_news
 from exp_corpus_loader import get_corpus_bow
-from exp_corpus_loader import get_corpus_doc2vec
-from exp_corpus_loader import get_corpus_tfidf
-from exp_corpus_loader import get_corpus_nel
-from exp_plot_news import plot_data
 
 import os
 import numpy as np
+import pandas as pd
 import pickle
 
 from sklearn.cluster import AgglomerativeClustering
@@ -47,9 +44,8 @@ else:
 
 idx_filter = np.where(labels != 'Unclassified')
 
-plot_data(vectors=doc_bow_2d[idx_filter], labels=labels[idx_filter],
-          title='',
-          file='data/tsne_clustering_ground_truth.pdf')
+ids = np.array([n['id'] for n in news])
+titles = np.array([n['title'] for n in news])
 
 print("Computing ground truth... DONE!")
 
@@ -60,16 +56,14 @@ agglomerative = AgglomerativeClustering(n_clusters=45,
                                         linkage='average')
 
 
-corpus, labels = get_corpus_doc2vec()
 dist_file = 'data/dist_doc2vec.bin'
 vectors_dist = load(dist_file)
 
 pred_labels = agglomerative.fit_predict(vectors_dist)
-
-plot_data(vectors=doc_bow_2d[idx_filter], labels=pred_labels[idx_filter],
-          title='',
-          file='data/tsne_clustering_doc2vec.pdf',
-          legend=False)
+pd.DataFrame({'id': ids[idx_filter],
+              'title': titles[idx_filter],
+              'cluster': pred_labels[idx_filter],
+              'label': labels[idx_filter]}).to_csv('data/agglomerative_doc2vec_groups.csv', index=False)
 
 print("Computing agglomerative clustering Doc2Vec... DONE!")
 
@@ -81,16 +75,14 @@ agglomerative = AgglomerativeClustering(n_clusters=40,
                                         linkage='average')
 
 
-corpus, labels = get_corpus_tfidf()
 dist_file = 'data/dist_tfidf.bin'
 vectors_dist = load(dist_file)
 
 pred_labels = agglomerative.fit_predict(vectors_dist)
-
-plot_data(vectors=doc_bow_2d[idx_filter], labels=pred_labels[idx_filter],
-          title='',
-          file='data/tsne_clustering_tfidf.pdf',
-          legend=False)
+pd.DataFrame({'id': ids[idx_filter],
+              'title': titles[idx_filter],
+              'cluster': pred_labels[idx_filter],
+              'label': labels[idx_filter]}).to_csv('data/agglomerative_tfidf_groups.csv', index=False)
 
 print("Computing agglomerative clustering TF-IDF... DONE!")
 
@@ -102,16 +94,14 @@ agglomerative = AgglomerativeClustering(n_clusters=50,
                                         linkage='average')
 
 
-corpus, labels = get_corpus_bow()
 dist_file = 'data/dist_bow.bin'
 vectors_dist = load(dist_file)
 
 pred_labels = agglomerative.fit_predict(vectors_dist)
-
-plot_data(vectors=doc_bow_2d[idx_filter], labels=pred_labels[idx_filter],
-          title='',
-          file='data/tsne_clustering_bow.pdf',
-          legend=False)
+pd.DataFrame({'id': ids[idx_filter],
+              'title': titles[idx_filter],
+              'cluster': pred_labels[idx_filter],
+              'label': labels[idx_filter]}).to_csv('data/agglomerative_bow_groups.csv', index=False)
 
 print("Computing agglomerative clustering BOW... DONE!")
 
@@ -123,15 +113,13 @@ agglomerative = AgglomerativeClustering(n_clusters=85,
                                         linkage='average')
 
 
-corpus, labels = get_corpus_nel()
 dist_file = 'data/dist_nel.bin'
 vectors_dist = load(dist_file)
 
 pred_labels = agglomerative.fit_predict(vectors_dist)
-
-plot_data(vectors=doc_bow_2d[idx_filter], labels=pred_labels[idx_filter],
-          title='',
-          file='data/tsne_clustering_nel.pdf',
-          legend=False)
+pd.DataFrame({'id': ids[idx_filter],
+              'title': titles[idx_filter],
+              'cluster': pred_labels[idx_filter],
+              'label': labels[idx_filter]}).to_csv('data/agglomerative_nel_groups.csv', index=False)
 
 print("Computing agglomerative clustering NEL... DONE!")
