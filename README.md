@@ -16,3 +16,8 @@
 
 * [Source code](exp_spreading.py)
 * [Results](exp_spreading_results.csv)
+
+### Data
+
+* [Plain (SQL) - Compressed](data/database_plain.tar.xz)
+* [Postgres Binary](data/database_postgres_binary.backup)
