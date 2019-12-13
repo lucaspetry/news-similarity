@@ -1,4 +1,4 @@
 DBNAME = "news_articles"
-DBHOST = "150.162.58.58"
+DBHOST = "localhost"
 DBUSER = "postgres"
 DBPASS = "Trajetorias123"
